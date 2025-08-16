@@ -324,6 +324,67 @@
             box-shadow: 0 8px 20px rgba(106, 17, 203, 0.6);
         }
         
+        .videos-list {
+            max-height: 300px;
+            overflow-y: auto;
+            margin-top: 20px;
+            padding: 15px;
+            background: rgba(0, 0, 0, 0.15);
+            border-radius: 10px;
+        }
+        
+        .video-item {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .video-item:last-child {
+            border-bottom: none;
+        }
+        
+        .video-thumb {
+            width: 120px;
+            height: 70px;
+            border-radius: 5px;
+            background: linear-gradient(45deg, #ff4e50, #f9d423);
+            margin-left: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 2rem;
+        }
+        
+        .video-info {
+            flex: 1;
+        }
+        
+        .video-title {
+            font-weight: 500;
+            margin-bottom: 5px;
+        }
+        
+        .video-duration {
+            font-size: 0.85rem;
+            color: #bbb;
+        }
+        
+        .video-download {
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            border-radius: 5px;
+            color: white;
+            padding: 8px 15px;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        
+        .video-download:hover {
+            background: var(--accent);
+        }
+        
         /* ميزات */
         .features {
             padding: 100px 0;
@@ -499,6 +560,16 @@
                 width: 100%;
                 justify-content: center;
             }
+            
+            .video-item {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .video-thumb {
+                margin-left: 0;
+                margin-bottom: 10px;
+            }
         }
     </style>
 </head>
@@ -532,7 +603,7 @@
                 
                 <div class="download-box floating">
                     <div class="input-group">
-                        <input type="text" id="channel-url" placeholder="https://www.youtube.com/channel/... أو رابط قائمة التشغيل">
+                        <input type="text" id="channel-url" placeholder="https://www.youtube.com/channel/... أو رابط قائمة التشغيل" value="https://www.youtube.com/c/YouTubeCreators">
                         <button class="btn" id="download-btn"><i class="fas fa-bolt"></i> تحميل القناة</button>
                     </div>
                     
@@ -572,6 +643,10 @@
                         <p>تم تحميل <span id="total-videos">25</span> فيديو بنجاح</p>
                         <p>حجم الملف: <span id="total-size">1.2GB</span></p>
                         <a href="#" id="final-download"><i class="fas fa-download"></i> تنزيل الملف النهائي (ZIP)</a>
+                        
+                        <div class="videos-list" id="videos-list">
+                            <!-- سيتم ملؤها بالجافاسكريبت -->
+                        </div>
                     </div>
                 </div>
             </div>
@@ -688,17 +763,59 @@
             const totalSize = document.getElementById('total-size');
             const finalDownload = document.getElementById('final-download');
             const channelUrl = document.getElementById('channel-url');
+            const videosList = document.getElementById('videos-list');
             
-            // متغيرات لتخزين حالة التحميل
-            let isDownloading = false;
-            let currentProgress = 0;
-            let totalVideoCount = 0;
-            let totalDownloadSize = 0;
+            // قائمة الفيديوهات الشائعة لقناة يوتيوب
+            const popularVideos = [
+                { id: "dQw4w9WgXcQ", title: "مقدمة القناة والتعريف بالمحتوى", duration: "4:20" },
+                { id: "9bZkp7q19f0", title: "أهم النصائح لزيادة المشاهدات", duration: "10:45" },
+                { id: "KQ6zr6kCPj8", title: "كيفية إنشاء محتوى جذاب", duration: "15:32" },
+                { id: "CevxZvSJLk8", title: "أدوات تحرير الفيديو الاحترافية", duration: "22:18" },
+                { id: "JGwWNGJdvx8", title: "أسرار خوارزمية يوتيوب", duration: "18:07" },
+                { id: "OPf0YbXqDm0", title: "كيفية تحقيق الربح من اليوتيوب", duration: "25:41" },
+                { id: "U9t-slLl30E", title: "أفضل الأوقات لنشر الفيديوهات", duration: "12:15" },
+                { id: "kXYiU_JCYtU", title: "نصائح للتعامل مع التعليقات السلبية", duration: "8:56" },
+                { id: "VYOjWnS4cMY", title: "أحدث اتجاهات المحتوى لعام 2023", duration: "19:22" },
+                { id: "YQHsXMglC9A", title: "مقابلة مع صانع محتوى ناجح", duration: "30:14" },
+                { id: "nfs8NYg7yQM", title: "دليل إنشاء قوائم التشغيل الفعالة", duration: "14:33" },
+                { id: "fJ9rUzIMcZQ", title: "أسرار التصوير الاحترافي للفيديوهات", duration: "21:05" }
+            ];
+            
+            // خيارات الجودة
+            const qualityOption = document.getElementById('quality-option');
+            const qualities = ['720p', '1080p', '1440p', '4K'];
+            let currentQualityIndex = 1;
+            
+            // خيارات التنسيق
+            const formatOption = document.getElementById('format-option');
+            const formats = ['MP4', 'WEBM', 'MKV', 'MP3'];
+            let currentFormatIndex = 0;
+            
+            // خيارات النوع
+            const typeOption = document.getElementById('type-option');
+            const types = ['تحميل كامل القناة', 'تحميل أحدث 10 فيديوهات', 'تحميل قائمة تشغيل'];
+            let currentTypeIndex = 0;
+            
+            // تغيير خيار الجودة عند النقر
+            qualityOption.addEventListener('click', function() {
+                currentQualityIndex = (currentQualityIndex + 1) % qualities.length;
+                this.querySelector('span').textContent = `جودة الفيديو: ${qualities[currentQualityIndex]}`;
+            });
+            
+            // تغيير خيار التنسيق عند النقر
+            formatOption.addEventListener('click', function() {
+                currentFormatIndex = (currentFormatIndex + 1) % formats.length;
+                this.querySelector('span').textContent = `تنسيق التحميل: ${formats[currentFormatIndex]}`;
+            });
+            
+            // تغيير خيار النوع عند النقر
+            typeOption.addEventListener('click', function() {
+                currentTypeIndex = (currentTypeIndex + 1) % types.length;
+                this.querySelector('span').textContent = types[currentTypeIndex];
+            });
             
             // تفعيل زر التحميل
             downloadBtn.addEventListener('click', function() {
-                if (isDownloading) return;
-                
                 const url = channelUrl.value.trim();
                 
                 if (!url) {
@@ -706,80 +823,86 @@
                     return;
                 }
                 
-                // بدء عملية التحميل
-                startDownloadProcess(url);
-            });
-            
-            // بدء عملية التحميل
-            function startDownloadProcess(url) {
-                isDownloading = true;
-                
                 // تعطيل الزر أثناء التحميل
-                downloadBtn.disabled = true;
-                downloadBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري التحضير...';
+                this.disabled = true;
+                this.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري التحضير...';
                 
                 // إظهار شريط التقدم
                 progressContainer.style.display = 'block';
                 downloadResult.style.display = 'none';
                 
-                // توليد بيانات عشوائية للقناة
-                totalVideoCount = Math.floor(Math.random() * 20) + 15; // 15-35 فيديو
+                // إعداد متغيرات التقدم
+                let progress = 0;
+                let currentVideo = 0;
+                totalVideoCount = popularVideos.length;
                 totalDownloadSize = (Math.random() * 2 + 1).toFixed(1); // 1-3GB
                 
-                // إعادة تعيين شريط التقدم
-                currentProgress = 0;
-                progressBar.style.width = '0%';
-                progressPercentage.textContent = '0%';
-                videosCount.textContent = `0 فيديو من ${totalVideoCount}`;
-                downloadSize.textContent = `0GB من ${totalDownloadSize}GB`;
-                
-                // بدء محاكاة عملية التحميل
-                simulateDownload();
-            }
-            
-            // محاكاة عملية التحميل
-            function simulateDownload() {
+                // محاكاة عملية التحميل
                 const downloadInterval = setInterval(() => {
-                    // زيادة التقدم
-                    currentProgress += Math.random() * 5;
+                    progress += Math.random() * 5;
                     
                     // تحديث شريط التقدم
-                    if (currentProgress > 100) currentProgress = 100;
-                    progressBar.style.width = currentProgress + '%';
-                    progressPercentage.textContent = Math.floor(currentProgress) + '%';
+                    if (progress > 100) progress = 100;
+                    progressBar.style.width = progress + '%';
+                    progressPercentage.textContent = Math.floor(progress) + '%';
                     
                     // تحديث عدد الفيديوهات
-                    const currentVideos = Math.min(totalVideoCount, Math.floor(currentProgress * totalVideoCount / 100));
-                    videosCount.textContent = `${currentVideos} فيديو من ${totalVideoCount}`;
+                    if (progress >= (currentVideo / totalVideoCount) * 100) {
+                        currentVideo = Math.min(totalVideoCount, Math.floor(progress * totalVideoCount / 100));
+                        videosCount.textContent = `${currentVideo} فيديو من ${totalVideoCount}`;
+                    }
                     
                     // تحديث حجم التحميل
-                    const downloadedSize = (totalDownloadSize * currentProgress / 100).toFixed(1);
+                    const downloadedSize = (totalDownloadSize * progress / 100).toFixed(1);
                     downloadSize.textContent = `${downloadedSize}GB من ${totalDownloadSize}GB`;
                     
                     // عند اكتمال التحميل
-                    if (currentProgress >= 100) {
+                    if (progress >= 100) {
                         clearInterval(downloadInterval);
-                        completeDownload();
+                        
+                        // إنشاء قائمة الفيديوهات
+                        generateVideosList();
+                        
+                        // إخفاء شريط التقدم وإظهار النتيجة
+                        setTimeout(() => {
+                            progressContainer.style.display = 'none';
+                            downloadResult.style.display = 'block';
+                            
+                            // تعيين بيانات النتيجة
+                            totalVideos.textContent = totalVideoCount;
+                            totalSize.textContent = totalDownloadSize + 'GB';
+                            
+                            // إعادة تمكين الزر
+                            downloadBtn.disabled = false;
+                            downloadBtn.innerHTML = '<i class="fas fa-bolt"></i> تحميل القناة';
+                        }, 1000);
                     }
-                }, 300);
-            }
+                }, 200);
+            });
             
-            // إكمال عملية التحميل
-            function completeDownload() {
-                // إخفاء شريط التقدم وإظهار النتيجة
-                setTimeout(() => {
-                    progressContainer.style.display = 'none';
-                    downloadResult.style.display = 'block';
+            // إنشاء قائمة الفيديوهات
+            function generateVideosList() {
+                videosList.innerHTML = '';
+                
+                popularVideos.forEach((video, index) => {
+                    const videoItem = document.createElement('div');
+                    videoItem.className = 'video-item';
                     
-                    // تعيين بيانات النتيجة
-                    totalVideos.textContent = totalVideoCount;
-                    totalSize.textContent = totalDownloadSize + 'GB';
+                    videoItem.innerHTML = `
+                        <div class="video-thumb">
+                            <i class="fas fa-play"></i>
+                        </div>
+                        <div class="video-info">
+                            <div class="video-title">${index + 1}. ${video.title}</div>
+                            <div class="video-duration">المدة: ${video.duration}</div>
+                        </div>
+                        <a href="https://www.youtube.com/watch?v=${video.id}" target="_blank" class="video-download">
+                            <i class="fas fa-download"></i> تحميل
+                        </a>
+                    `;
                     
-                    // إعادة تمكين الزر
-                    downloadBtn.disabled = false;
-                    downloadBtn.innerHTML = '<i class="fas fa-bolt"></i> تحميل القناة';
-                    isDownloading = false;
-                }, 800);
+                    videosList.appendChild(videoItem);
+                });
             }
             
             // تفعيل زر التحميل النهائي
@@ -839,9 +962,6 @@
             window.addEventListener('scroll', animateOnScroll);
             // تشغيل مرة واحدة عند التحميل
             animateOnScroll();
-            
-            // تحميل رابط يوتيوب افتراضي عند التحميل
-            channelUrl.value = 'https://www.youtube.com/channel/UC_x5XG1OV2P6uZZ5FSM9Ttw';
         });
     </script>
 </body>
