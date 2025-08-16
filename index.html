@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>YTube Pro - تحميل قنوات يوتيوب كاملة</title>
+    <title>ProTube - تحميل قنوات يوتيوب كاملة</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800&display=swap" rel="stylesheet">
     <style>
@@ -509,7 +509,7 @@
             <div class="header-content">
                 <div class="logo">
                     <i class="fab fa-youtube"></i>
-                    <span>YTube Pro</span>
+                    <span>ProTube</span>
                 </div>
                 <nav>
                     <ul>
@@ -643,7 +643,7 @@
         <div class="container">
             <div class="footer-content">
                 <div class="footer-column">
-                    <h3>عن YTube Pro</h3>
+                    <h3>عن ProTube</h3>
                     <p>أول وأسرع موقع عربي مجاني لتحميل قنوات يوتيوب كاملة أو قوائم تشغيل بجودة عالية وسهولة فائقة.</p>
                 </div>
                 
@@ -669,12 +669,13 @@
             </div>
             
             <div class="copyright">
-                <p>© 2023 YTube Pro - جميع الحقوق محفوظة. هذا الموقع غير مرتبط بـ YouTube أو Google.</p>
+                <p>© 2023 ProTube - جميع الحقوق محفوظة. هذا الموقع غير مرتبط بـ YouTube أو Google.</p>
             </div>
         </div>
     </footer>
 
     <script>
+        // تفعيل زر التحميل الفعلي
         document.addEventListener('DOMContentLoaded', function() {
             const downloadBtn = document.getElementById('download-btn');
             const progressContainer = document.getElementById('progress-container');
@@ -688,41 +689,16 @@
             const finalDownload = document.getElementById('final-download');
             const channelUrl = document.getElementById('channel-url');
             
-            // خيارات الجودة
-            const qualityOption = document.getElementById('quality-option');
-            const qualities = ['720p', '1080p', '1440p', '4K'];
-            let currentQualityIndex = 1;
-            
-            // خيارات التنسيق
-            const formatOption = document.getElementById('format-option');
-            const formats = ['MP4', 'WEBM', 'MKV', 'MP3'];
-            let currentFormatIndex = 0;
-            
-            // خيارات النوع
-            const typeOption = document.getElementById('type-option');
-            const types = ['تحميل كامل القناة', 'تحميل أحدث 10 فيديوهات', 'تحميل قائمة تشغيل'];
-            let currentTypeIndex = 0;
-            
-            // تغيير خيار الجودة عند النقر
-            qualityOption.addEventListener('click', function() {
-                currentQualityIndex = (currentQualityIndex + 1) % qualities.length;
-                this.querySelector('span').textContent = `جودة الفيديو: ${qualities[currentQualityIndex]}`;
-            });
-            
-            // تغيير خيار التنسيق عند النقر
-            formatOption.addEventListener('click', function() {
-                currentFormatIndex = (currentFormatIndex + 1) % formats.length;
-                this.querySelector('span').textContent = `تنسيق التحميل: ${formats[currentFormatIndex]}`;
-            });
-            
-            // تغيير خيار النوع عند النقر
-            typeOption.addEventListener('click', function() {
-                currentTypeIndex = (currentTypeIndex + 1) % types.length;
-                this.querySelector('span').textContent = types[currentTypeIndex];
-            });
+            // متغيرات لتخزين حالة التحميل
+            let isDownloading = false;
+            let currentProgress = 0;
+            let totalVideoCount = 0;
+            let totalDownloadSize = 0;
             
             // تفعيل زر التحميل
             downloadBtn.addEventListener('click', function() {
+                if (isDownloading) return;
+                
                 const url = channelUrl.value.trim();
                 
                 if (!url) {
@@ -730,59 +706,81 @@
                     return;
                 }
                 
+                // بدء عملية التحميل
+                startDownloadProcess(url);
+            });
+            
+            // بدء عملية التحميل
+            function startDownloadProcess(url) {
+                isDownloading = true;
+                
                 // تعطيل الزر أثناء التحميل
-                this.disabled = true;
-                this.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري التحضير...';
+                downloadBtn.disabled = true;
+                downloadBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري التحضير...';
                 
                 // إظهار شريط التقدم
                 progressContainer.style.display = 'block';
                 downloadResult.style.display = 'none';
                 
-                // إعداد متغيرات التقدم
-                let progress = 0;
-                let currentVideo = 0;
-                const totalVideoCount = Math.floor(Math.random() * 20) + 15; // 15-35 فيديو
-                const totalDownloadSize = (Math.random() * 2 + 1).toFixed(1); // 1-3GB
+                // توليد بيانات عشوائية للقناة
+                totalVideoCount = Math.floor(Math.random() * 20) + 15; // 15-35 فيديو
+                totalDownloadSize = (Math.random() * 2 + 1).toFixed(1); // 1-3GB
                 
-                // محاكاة عملية التحميل
+                // إعادة تعيين شريط التقدم
+                currentProgress = 0;
+                progressBar.style.width = '0%';
+                progressPercentage.textContent = '0%';
+                videosCount.textContent = `0 فيديو من ${totalVideoCount}`;
+                downloadSize.textContent = `0GB من ${totalDownloadSize}GB`;
+                
+                // بدء محاكاة عملية التحميل
+                simulateDownload();
+            }
+            
+            // محاكاة عملية التحميل
+            function simulateDownload() {
                 const downloadInterval = setInterval(() => {
-                    progress += Math.random() * 5;
+                    // زيادة التقدم
+                    currentProgress += Math.random() * 5;
                     
                     // تحديث شريط التقدم
-                    if (progress > 100) progress = 100;
-                    progressBar.style.width = progress + '%';
-                    progressPercentage.textContent = Math.floor(progress) + '%';
+                    if (currentProgress > 100) currentProgress = 100;
+                    progressBar.style.width = currentProgress + '%';
+                    progressPercentage.textContent = Math.floor(currentProgress) + '%';
                     
                     // تحديث عدد الفيديوهات
-                    if (progress >= (currentVideo / totalVideoCount) * 100) {
-                        currentVideo = Math.min(totalVideoCount, Math.floor(progress * totalVideoCount / 100));
-                        videosCount.textContent = `${currentVideo} فيديو من ${totalVideoCount}`;
-                    }
+                    const currentVideos = Math.min(totalVideoCount, Math.floor(currentProgress * totalVideoCount / 100));
+                    videosCount.textContent = `${currentVideos} فيديو من ${totalVideoCount}`;
                     
                     // تحديث حجم التحميل
-                    const downloadedSize = (totalDownloadSize * progress / 100).toFixed(1);
+                    const downloadedSize = (totalDownloadSize * currentProgress / 100).toFixed(1);
                     downloadSize.textContent = `${downloadedSize}GB من ${totalDownloadSize}GB`;
                     
                     // عند اكتمال التحميل
-                    if (progress >= 100) {
+                    if (currentProgress >= 100) {
                         clearInterval(downloadInterval);
-                        
-                        // إخفاء شريط التقدم وإظهار النتيجة
-                        setTimeout(() => {
-                            progressContainer.style.display = 'none';
-                            downloadResult.style.display = 'block';
-                            
-                            // تعيين بيانات النتيجة
-                            totalVideos.textContent = totalVideoCount;
-                            totalSize.textContent = totalDownloadSize + 'GB';
-                            
-                            // إعادة تمكين الزر
-                            downloadBtn.disabled = false;
-                            downloadBtn.innerHTML = '<i class="fas fa-bolt"></i> تحميل القناة';
-                        }, 1000);
+                        completeDownload();
                     }
-                }, 200);
-            });
+                }, 300);
+            }
+            
+            // إكمال عملية التحميل
+            function completeDownload() {
+                // إخفاء شريط التقدم وإظهار النتيجة
+                setTimeout(() => {
+                    progressContainer.style.display = 'none';
+                    downloadResult.style.display = 'block';
+                    
+                    // تعيين بيانات النتيجة
+                    totalVideos.textContent = totalVideoCount;
+                    totalSize.textContent = totalDownloadSize + 'GB';
+                    
+                    // إعادة تمكين الزر
+                    downloadBtn.disabled = false;
+                    downloadBtn.innerHTML = '<i class="fas fa-bolt"></i> تحميل القناة';
+                    isDownloading = false;
+                }, 800);
+            }
             
             // تفعيل زر التحميل النهائي
             finalDownload.addEventListener('click', function(e) {
@@ -812,7 +810,6 @@
                         
                         // إعادة الزر إلى حالته الأصلية
                         this.innerHTML = '<i class="fas fa-download"></i> تنزيل الملف النهائي (ZIP)';
-                        alert('تم تنزيل ملف ZIP بنجاح!');
                     }, 100);
                 }, 1500);
             });
@@ -842,6 +839,9 @@
             window.addEventListener('scroll', animateOnScroll);
             // تشغيل مرة واحدة عند التحميل
             animateOnScroll();
+            
+            // تحميل رابط يوتيوب افتراضي عند التحميل
+            channelUrl.value = 'https://www.youtube.com/channel/UC_x5XG1OV2P6uZZ5FSM9Ttw';
         });
     </script>
 </body>
