@@ -1,0 +1,848 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YTube Pro - تحميل قنوات يوتيوب كاملة</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Tajawal', sans-serif;
+        }
+        
+        :root {
+            --primary: #6a11cb;
+            --secondary: #2575fc;
+            --accent: #ff4e50;
+            --light: #f8f9fa;
+            --dark: #1a1a2e;
+            --gold: #ffd700;
+            --silver: #c0c0c0;
+            --transition: all 0.4s ease;
+            --gradient: linear-gradient(135deg, var(--primary), var(--secondary));
+            --gradient-accent: linear-gradient(135deg, var(--accent), #ff9a44);
+        }
+        
+        body {
+            background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+            color: var(--light);
+            line-height: 1.6;
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+            padding-top: 80px;
+        }
+        
+        body::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at 10% 20%, rgba(255, 255, 255, 0.05) 0%, rgba(0, 0, 0, 0) 50%);
+            z-index: -1;
+        }
+        
+        .container {
+            width: 90%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 15px;
+        }
+        
+        /* التصميم العلوي */
+        header {
+            padding: 15px 0;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 1000;
+            backdrop-filter: blur(10px);
+            background: rgba(10, 10, 35, 0.85);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+        }
+        
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.8rem;
+            font-weight: 800;
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 15px rgba(106, 17, 203, 0.5);
+        }
+        
+        .logo i {
+            color: var(--accent);
+        }
+        
+        nav ul {
+            display: flex;
+            list-style: none;
+            gap: 30px;
+        }
+        
+        nav a {
+            color: var(--light);
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 1.1rem;
+            position: relative;
+            padding: 5px 0;
+            transition: var(--transition);
+        }
+        
+        nav a:hover {
+            color: var(--accent);
+        }
+        
+        nav a::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--accent);
+            transition: var(--transition);
+        }
+        
+        nav a:hover::after {
+            width: 100%;
+        }
+        
+        /* القسم الرئيسي */
+        .hero {
+            padding: 80px 0 50px;
+            text-align: center;
+            position: relative;
+        }
+        
+        .hero-content {
+            max-width: 800px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 2;
+        }
+        
+        .hero h1 {
+            font-size: 3.5rem;
+            margin-bottom: 20px;
+            background: linear-gradient(to right, #ff4e50, #ff9a44, #ffd700);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            line-height: 1.2;
+            text-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        .hero p {
+            font-size: 1.3rem;
+            margin-bottom: 40px;
+            color: #e0e0ff;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        .download-box {
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .input-group {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+        
+        .input-group input {
+            flex: 1;
+            padding: 18px 25px;
+            border: none;
+            border-radius: 50px;
+            background: rgba(0, 0, 0, 0.3);
+            color: white;
+            font-size: 1.1rem;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.2);
+            transition: var(--transition);
+        }
+        
+        .input-group input:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 15px rgba(255, 78, 80, 0.3);
+        }
+        
+        .input-group input::placeholder {
+            color: #aaa;
+        }
+        
+        .btn {
+            padding: 18px 40px;
+            border: none;
+            border-radius: 50px;
+            background: var(--gradient-accent);
+            color: white;
+            font-size: 1.1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: var(--transition);
+            box-shadow: 0 5px 15px rgba(255, 78, 80, 0.4);
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(255, 78, 80, 0.6);
+        }
+        
+        .btn:disabled {
+            background: linear-gradient(135deg, #777, #999);
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        
+        .btn i {
+            font-size: 1.2rem;
+        }
+        
+        .options {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            justify-content: center;
+        }
+        
+        .option {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 15px 25px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: var(--transition);
+            cursor: pointer;
+        }
+        
+        .option:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateY(-3px);
+        }
+        
+        .option i {
+            color: var(--accent);
+            font-size: 1.2rem;
+        }
+        
+        /* قسم التقدم */
+        .progress-container {
+            margin-top: 30px;
+            display: none;
+        }
+        
+        .progress-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+        
+        .progress-bar {
+            height: 12px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        
+        .progress {
+            height: 100%;
+            background: var(--gradient-accent);
+            border-radius: 10px;
+            width: 0%;
+            transition: width 0.5s ease;
+        }
+        
+        .progress-stats {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 15px;
+            font-size: 0.9rem;
+            color: #aaa;
+        }
+        
+        .download-result {
+            text-align: center;
+            padding: 30px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 15px;
+            margin-top: 30px;
+            display: none;
+        }
+        
+        .download-result a {
+            display: inline-block;
+            margin-top: 15px;
+            padding: 15px 40px;
+            background: var(--gradient);
+            color: white;
+            text-decoration: none;
+            border-radius: 50px;
+            font-weight: bold;
+            transition: var(--transition);
+            box-shadow: 0 5px 15px rgba(106, 17, 203, 0.4);
+        }
+        
+        .download-result a:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(106, 17, 203, 0.6);
+        }
+        
+        /* ميزات */
+        .features {
+            padding: 100px 0;
+        }
+        
+        .section-title {
+            text-align: center;
+            margin-bottom: 60px;
+        }
+        
+        .section-title h2 {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .section-title p {
+            font-size: 1.2rem;
+            color: #ccc;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+        }
+        
+        .feature-card {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: var(--transition);
+            text-align: center;
+            backdrop-filter: blur(5px);
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-10px);
+            background: rgba(255, 255, 255, 0.08);
+            border-color: var(--accent);
+        }
+        
+        .feature-icon {
+            width: 80px;
+            height: 80px;
+            background: var(--gradient);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            font-size: 2rem;
+            color: white;
+            box-shadow: 0 5px 15px rgba(106, 17, 203, 0.4);
+        }
+        
+        .feature-card h3 {
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+            color: white;
+        }
+        
+        .feature-card p {
+            color: #bbb;
+        }
+        
+        /* فوتر */
+        footer {
+            background: rgba(5, 5, 20, 0.9);
+            padding: 50px 0 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 40px;
+            margin-bottom: 40px;
+        }
+        
+        .footer-column h3 {
+            font-size: 1.4rem;
+            margin-bottom: 20px;
+            color: var(--accent);
+            position: relative;
+            padding-bottom: 10px;
+        }
+        
+        .footer-column h3::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 50px;
+            height: 2px;
+            background: var(--accent);
+        }
+        
+        .footer-column ul {
+            list-style: none;
+        }
+        
+        .footer-column ul li {
+            margin-bottom: 12px;
+        }
+        
+        .footer-column ul li a {
+            color: #bbb;
+            text-decoration: none;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .footer-column ul li a:hover {
+            color: var(--accent);
+            transform: translateX(5px);
+        }
+        
+        .copyright {
+            text-align: center;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            color: #777;
+            font-size: 0.9rem;
+        }
+        
+        /* التأثيرات والرسوم المتحركة */
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-15px);
+            }
+        }
+        
+        .floating {
+            animation: float 4s ease-in-out infinite;
+        }
+        
+        /* التكيف مع الشاشات الصغيرة */
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            nav ul {
+                gap: 15px;
+            }
+            
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+            
+            .hero p {
+                font-size: 1.1rem;
+            }
+            
+            .input-group {
+                flex-direction: column;
+            }
+            
+            .btn {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- الهيدر -->
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <i class="fab fa-youtube"></i>
+                    <span>YTube Pro</span>
+                </div>
+                <nav>
+                    <ul>
+                        <li><a href="#"><i class="fas fa-home"></i> الرئيسية</a></li>
+                        <li><a href="#"><i class="fas fa-download"></i> التحميل</a></li>
+                        <li><a href="#"><i class="fas fa-star"></i> المميزات</a></li>
+                        <li><a href="#"><i class="fas fa-question-circle"></i> المساعدة</a></li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <!-- القسم الرئيسي -->
+    <section class="hero">
+        <div class="container">
+            <div class="hero-content">
+                <h1>حمّل أي قناة يوتيوب كاملة أو قائمة تشغيل بنقرة واحدة!</h1>
+                <p>أول موقع عربي مجاني بالكامل لتحميل قنوات يوتيوب كاملة بجودة عالية وبسهولة فائقة</p>
+                
+                <div class="download-box floating">
+                    <div class="input-group">
+                        <input type="text" id="channel-url" placeholder="https://www.youtube.com/channel/... أو رابط قائمة التشغيل">
+                        <button class="btn" id="download-btn"><i class="fas fa-bolt"></i> تحميل القناة</button>
+                    </div>
+                    
+                    <div class="options">
+                        <div class="option" id="quality-option">
+                            <i class="fas fa-video"></i>
+                            <span>جودة الفيديو: 1080p</span>
+                        </div>
+                        <div class="option" id="format-option">
+                            <i class="fas fa-folder"></i>
+                            <span>تنسيق التحميل: MP4</span>
+                        </div>
+                        <div class="option" id="type-option">
+                            <i class="fas fa-layer-group"></i>
+                            <span>تحميل كامل القناة</span>
+                        </div>
+                    </div>
+                    
+                    <!-- قسم التقدم -->
+                    <div class="progress-container" id="progress-container">
+                        <div class="progress-header">
+                            <span>جاري تحميل القناة...</span>
+                            <span id="progress-percentage">0%</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress" id="progress-bar"></div>
+                        </div>
+                        <div class="progress-stats">
+                            <span id="videos-count">0 فيديو من 0</span>
+                            <span id="download-size">0MB من 0MB</span>
+                        </div>
+                    </div>
+                    
+                    <!-- نتيجة التحميل -->
+                    <div class="download-result" id="download-result">
+                        <h3><i class="fas fa-check-circle"></i> تم تحميل قناتك بنجاح!</h3>
+                        <p>تم تحميل <span id="total-videos">25</span> فيديو بنجاح</p>
+                        <p>حجم الملف: <span id="total-size">1.2GB</span></p>
+                        <a href="#" id="final-download"><i class="fas fa-download"></i> تنزيل الملف النهائي (ZIP)</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- قسم الميزات -->
+    <section class="features">
+        <div class="container">
+            <div class="section-title">
+                <h2>مميزات رائعة تجعلنا الأفضل</h2>
+                <p>اكتشف لماذا يختارنا آلاف المستخدمين يومياً لتحميل محتوى يوتيوب</p>
+            </div>
+            
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-bolt"></i>
+                    </div>
+                    <h3>سرعة فائقة</h3>
+                    <p>تحميل قنوات كاملة بسرعة خيالية تصل إلى 10x مقارنة بالمنافسين</p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-infinity"></i>
+                    </div>
+                    <h3>غير محدود</h3>
+                    <p>لا حدود لعدد القنوات أو قوائم التشغيل التي يمكنك تحميلها</p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-crown"></i>
+                    </div>
+                    <h3>مجاني بالكامل</h3>
+                    <p>جميع الخدمات مجانية 100% بدون أي تكاليف أو اشتراكات</p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-hdd"></i>
+                    </div>
+                    <h3>تخزين سحابي</h3>
+                    <p>خيار حفظ القنوات المحملة على سحابة خاصة بك لمدة 30 يوماً</p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-gem"></i>
+                    </div>
+                    <h3>جودة فائقة</h3>
+                    <p>تحميل بجودة تصل إلى 4K مع الحفاظ على الصوت الأصلي</p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-mobile-alt"></i>
+                    </div>
+                    <h3>متوافق مع جميع الأجهزة</h3>
+                    <p>استخدم الخدمة من أي جهاز - حاسوب، هاتف أو لوحي</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- الفوتر -->
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-column">
+                    <h3>عن YTube Pro</h3>
+                    <p>أول وأسرع موقع عربي مجاني لتحميل قنوات يوتيوب كاملة أو قوائم تشغيل بجودة عالية وسهولة فائقة.</p>
+                </div>
+                
+                <div class="footer-column">
+                    <h3>روابط سريعة</h3>
+                    <ul>
+                        <li><a href="#"><i class="fas fa-angle-left"></i> الصفحة الرئيسية</a></li>
+                        <li><a href="#"><i class="fas fa-angle-left"></i> كيفية الاستخدام</a></li>
+                        <li><a href="#"><i class="fas fa-angle-left"></i> الأسئلة الشائعة</a></li>
+                        <li><a href="#"><i class="fas fa-angle-left"></i> سياسة الخصوصية</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-column">
+                    <h3>الدعم الفني</h3>
+                    <ul>
+                        <li><a href="#"><i class="fas fa-angle-left"></i> التواصل مع الدعم</a></li>
+                        <li><a href="#"><i class="fas fa-angle-left"></i> الإبلاغ عن مشكلة</a></li>
+                        <li><a href="#"><i class="fas fa-angle-left"></i> طلبات الميزات</a></li>
+                        <li><a href="#"><i class="fas fa-angle-left"></i> حالة الخدمة</a></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="copyright">
+                <p>© 2023 YTube Pro - جميع الحقوق محفوظة. هذا الموقع غير مرتبط بـ YouTube أو Google.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const downloadBtn = document.getElementById('download-btn');
+            const progressContainer = document.getElementById('progress-container');
+            const progressBar = document.getElementById('progress-bar');
+            const progressPercentage = document.getElementById('progress-percentage');
+            const videosCount = document.getElementById('videos-count');
+            const downloadSize = document.getElementById('download-size');
+            const downloadResult = document.getElementById('download-result');
+            const totalVideos = document.getElementById('total-videos');
+            const totalSize = document.getElementById('total-size');
+            const finalDownload = document.getElementById('final-download');
+            const channelUrl = document.getElementById('channel-url');
+            
+            // خيارات الجودة
+            const qualityOption = document.getElementById('quality-option');
+            const qualities = ['720p', '1080p', '1440p', '4K'];
+            let currentQualityIndex = 1;
+            
+            // خيارات التنسيق
+            const formatOption = document.getElementById('format-option');
+            const formats = ['MP4', 'WEBM', 'MKV', 'MP3'];
+            let currentFormatIndex = 0;
+            
+            // خيارات النوع
+            const typeOption = document.getElementById('type-option');
+            const types = ['تحميل كامل القناة', 'تحميل أحدث 10 فيديوهات', 'تحميل قائمة تشغيل'];
+            let currentTypeIndex = 0;
+            
+            // تغيير خيار الجودة عند النقر
+            qualityOption.addEventListener('click', function() {
+                currentQualityIndex = (currentQualityIndex + 1) % qualities.length;
+                this.querySelector('span').textContent = `جودة الفيديو: ${qualities[currentQualityIndex]}`;
+            });
+            
+            // تغيير خيار التنسيق عند النقر
+            formatOption.addEventListener('click', function() {
+                currentFormatIndex = (currentFormatIndex + 1) % formats.length;
+                this.querySelector('span').textContent = `تنسيق التحميل: ${formats[currentFormatIndex]}`;
+            });
+            
+            // تغيير خيار النوع عند النقر
+            typeOption.addEventListener('click', function() {
+                currentTypeIndex = (currentTypeIndex + 1) % types.length;
+                this.querySelector('span').textContent = types[currentTypeIndex];
+            });
+            
+            // تفعيل زر التحميل
+            downloadBtn.addEventListener('click', function() {
+                const url = channelUrl.value.trim();
+                
+                if (!url) {
+                    alert('الرجاء إدخال رابط قناة يوتيوب أو قائمة تشغيل');
+                    return;
+                }
+                
+                // تعطيل الزر أثناء التحميل
+                this.disabled = true;
+                this.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري التحضير...';
+                
+                // إظهار شريط التقدم
+                progressContainer.style.display = 'block';
+                downloadResult.style.display = 'none';
+                
+                // إعداد متغيرات التقدم
+                let progress = 0;
+                let currentVideo = 0;
+                const totalVideoCount = Math.floor(Math.random() * 20) + 15; // 15-35 فيديو
+                const totalDownloadSize = (Math.random() * 2 + 1).toFixed(1); // 1-3GB
+                
+                // محاكاة عملية التحميل
+                const downloadInterval = setInterval(() => {
+                    progress += Math.random() * 5;
+                    
+                    // تحديث شريط التقدم
+                    if (progress > 100) progress = 100;
+                    progressBar.style.width = progress + '%';
+                    progressPercentage.textContent = Math.floor(progress) + '%';
+                    
+                    // تحديث عدد الفيديوهات
+                    if (progress >= (currentVideo / totalVideoCount) * 100) {
+                        currentVideo = Math.min(totalVideoCount, Math.floor(progress * totalVideoCount / 100));
+                        videosCount.textContent = `${currentVideo} فيديو من ${totalVideoCount}`;
+                    }
+                    
+                    // تحديث حجم التحميل
+                    const downloadedSize = (totalDownloadSize * progress / 100).toFixed(1);
+                    downloadSize.textContent = `${downloadedSize}GB من ${totalDownloadSize}GB`;
+                    
+                    // عند اكتمال التحميل
+                    if (progress >= 100) {
+                        clearInterval(downloadInterval);
+                        
+                        // إخفاء شريط التقدم وإظهار النتيجة
+                        setTimeout(() => {
+                            progressContainer.style.display = 'none';
+                            downloadResult.style.display = 'block';
+                            
+                            // تعيين بيانات النتيجة
+                            totalVideos.textContent = totalVideoCount;
+                            totalSize.textContent = totalDownloadSize + 'GB';
+                            
+                            // إعادة تمكين الزر
+                            downloadBtn.disabled = false;
+                            downloadBtn.innerHTML = '<i class="fas fa-bolt"></i> تحميل القناة';
+                        }, 1000);
+                    }
+                }, 200);
+            });
+            
+            // تفعيل زر التحميل النهائي
+            finalDownload.addEventListener('click', function(e) {
+                e.preventDefault();
+                
+                // إظهار رسالة تحميل
+                this.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري تنزيل الملف...';
+                
+                // محاكاة تنزيل الملف
+                setTimeout(() => {
+                    // إنشاء ملف ZIP وهمي للتنزيل
+                    const content = "هذا ملف ZIP وهمي يحتوي على جميع فيديوهات القناة المحملة";
+                    const blob = new Blob([content], { type: 'application/zip' });
+                    const url = URL.createObjectURL(blob);
+                    
+                    // إنشاء رابط تنزيل
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = 'youtube_channel_download.zip';
+                    document.body.appendChild(a);
+                    a.click();
+                    
+                    // التنظيف
+                    setTimeout(() => {
+                        document.body.removeChild(a);
+                        window.URL.revokeObjectURL(url);
+                        
+                        // إعادة الزر إلى حالته الأصلية
+                        this.innerHTML = '<i class="fas fa-download"></i> تنزيل الملف النهائي (ZIP)';
+                        alert('تم تنزيل ملف ZIP بنجاح!');
+                    }, 100);
+                }, 1500);
+            });
+            
+            // تأثيرات عند التمرير
+            const featureCards = document.querySelectorAll('.feature-card');
+            
+            function animateOnScroll() {
+                featureCards.forEach(card => {
+                    const cardPosition = card.getBoundingClientRect().top;
+                    const screenPosition = window.innerHeight / 1.3;
+                    
+                    if (cardPosition < screenPosition) {
+                        card.style.opacity = '1';
+                        card.style.transform = 'translateY(0)';
+                    }
+                });
+            }
+            
+            // تهيئة البطاقات
+            featureCards.forEach(card => {
+                card.style.opacity = '0';
+                card.style.transform = 'translateY(20px)';
+                card.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+            });
+            
+            window.addEventListener('scroll', animateOnScroll);
+            // تشغيل مرة واحدة عند التحميل
+            animateOnScroll();
+        });
+    </script>
+</body>
+</html>
